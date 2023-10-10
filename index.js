@@ -57,29 +57,36 @@ client.on("message", (message) => {
         }
       }, 3600000);
     })();
-  }
-  if (message.body.includes(".list_token_hot")) {
-    console.log(message.body);
+  } else if (message.body.includes(".list_token_hot")) {
     (async () => {
+      let element = [];
       const apiserver = new BINANCE();
       const getData = await apiserver.DataCoinHots();
       for (let index = 0; index < getData.data.length; index++) {
-        const element = getData.data[index];
-        const DataToken = await apiserver.CekDataToken(element.symbol);
-        console.log("Name", element.symbol);
-        console.log("Price", DataToken.data.c);
-        console.log("Precentasi", element.priceChangePercent + "%");
-        console.log("Volume 24 hours " + "$. " + DataToken.data.v);
-        console.log("");
-        const datarespone = `${"Name : " + element.symbol}\n${
-          "Price : " + DataToken.data.c
-        }\n${"Volume 24 hours : " + "$" + parseFloat(DataToken.data.v)}\n`;
-        await delay(2000);
-        client.sendMessage(message.from, datarespone);
+        element.push(getData.data[index].symbol);
       }
+      element.forEach(async (element) => {
+        const getDatas = await apiserver.ScrapDataCoin();
+        for (let index = 0; index < getDatas.length; index++) {
+          const elements = getDatas[index];
+          if (elements.symbol === element) {
+            console.log("Name", elements.symbol);
+            console.log("Price", elements.lastPrice);
+            console.log("Precentasi", elements.priceChangePercent + "%");
+            console.log("Volume 24 hours " + "$. " + elements.quoteVolume);
+            console.log("");
+            const datarespone = `${"Name : " + elements.symbol}\n${
+              "Price : " + elements.lastPrice
+            }\n${"Precentasi : " + elements.priceChangePercent + "%"}\n${
+              "Volume 24 hours : " + "$ " + parseFloat(elements.quoteVolume)
+            }\n`;
+            await delay(2000);
+            client.sendMessage(message.from, datarespone);
+          }
+        }
+      });
     })();
-  }
-  if (message.body.includes(".cektoken")) {
+  } else if (message.body.includes(".cektoken")) {
     const coins = message.body;
     (async () => {
       const apiserver = new BINANCE();
@@ -102,8 +109,7 @@ client.on("message", (message) => {
         }
       }
     })();
-  }
-  if (message.body.includes(".command")) {
+  } else if (message.body.includes(".command")) {
     const datarespone = `==== LIST COMMAND ====\n*.list_token_hot* => Melihat Token Token Hot Today\n*.cektoken BNBUSDT* => Melihat Data Token\n`;
     client.sendMessage(message.from, datarespone);
   }
