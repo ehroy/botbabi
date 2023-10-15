@@ -2,6 +2,13 @@ const BINANCE = require("./lib/api");
 const qrcode = require("qrcode-terminal");
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const delay = require("delay");
+const dayjs = require("dayjs");
+const timezone = require("dayjs/plugin/timezone");
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(timezone);
+dayjs.extend(utc);
+dayjs.tz.setDefault("Asia/Jakarta");
+// console.log(dayjs.unix(Date.now() / 1000).format("HH:mm:ss"));
 const client = new Client({
   restartOnAuthFail: true,
   puppeteer: {
@@ -30,32 +37,35 @@ client.on("ready", () => {
 
 client.initialize();
 client.on("message", (message) => {
-  if (message.body.includes(".notice")) {
+  if (message.body.includes(".on")) {
     (async () => {
       setInterval(async () => {
-        const apiserver = new BINANCE();
-        const getData = await apiserver.ScrapDataCoin();
-        //   console.log(getData);
-        for (let index = 0; index < getData.length; index++) {
-          const element = getData[index];
-          if (element.symbol.includes("USDT")) {
-            if (parseInt(element.priceChangePercent) === 2) {
-              console.log("Name", element.symbol);
-              console.log("Price", element.lastPrice);
-              console.log("Precentasi", element.priceChangePercent + "%");
-              console.log("Volume 24 hours " + "$. " + element.quoteVolume);
-              console.log("");
-              const datarespone = `${"Name : " + element.symbol}\n${
-                "Price : " + element.lastPrice
-              }\n${"Precentasi : " + element.priceChangePercent + "%"}\n${
-                "Volume 24 hours : " + "$ " + parseFloat(element.quoteVolume)
-              }\n`;
-              await delay(2000);
-              client.sendMessage(message.from, datarespone);
+        let time = dayjs.unix(Date.now() / 1000).format("HH:mm:ss");
+        if (time.split(":")[1] === "00") {
+          const apiserver = new BINANCE();
+          const getData = await apiserver.ScrapDataCoin();
+          //   console.log(getData);
+          for (let index = 0; index < getData.length; index++) {
+            const element = getData[index];
+            if (element.symbol.includes("USDT")) {
+              if (parseInt(element.priceChangePercent) === 2) {
+                console.log("Name", element.symbol);
+                console.log("Price", element.lastPrice);
+                console.log("Precentasi", element.priceChangePercent + "%");
+                console.log("Volume 24 hours " + "$. " + element.quoteVolume);
+                console.log("");
+                const datarespone = `${"Name : " + element.symbol}\n${
+                  "Price : " + element.lastPrice
+                }\n${"Precentasi : " + element.priceChangePercent + "%"}\n${
+                  "Volume 24 hours : " + "$ " + parseFloat(element.quoteVolume)
+                }\n`;
+                await delay(2000);
+                client.sendMessage(message.from, datarespone);
+              }
             }
           }
         }
-      }, 3600000);
+      }, 1000);
     })();
   } else if (message.body.includes(".list_token_hot")) {
     (async () => {
