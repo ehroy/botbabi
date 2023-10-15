@@ -17,7 +17,7 @@ const convert = (number) => {
       tempNum[i] = `.${tempNum[i]}`;
     }
   }
-  rupiah = `Rp. ${tempNum.reverse().join("")},00`;
+  rupiah = ` ${tempNum.reverse().join("")},00`;
   return rupiah;
 };
 console.log(dayjs.unix(Date.now() / 1000).format("HH:mm:ss"));
