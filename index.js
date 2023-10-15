@@ -8,7 +8,19 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(timezone);
 dayjs.extend(utc);
 dayjs.tz.setDefault("Asia/Jakarta");
-// console.log(dayjs.unix(Date.now() / 1000).format("HH:mm:ss"));
+const convert = (number) => {
+  let tempNum = String(number).split("").reverse();
+  let rupiah = "";
+
+  for (let i = 0; i < tempNum.length; i++) {
+    if ((i + 1) % 3 == 0 && i != tempNum.length - 1) {
+      tempNum[i] = `.${tempNum[i]}`;
+    }
+  }
+  rupiah = `Rp. ${tempNum.reverse().join("")},00`;
+  return rupiah;
+};
+console.log(dayjs.unix(Date.now() / 1000).format("HH:mm:ss"));
 const client = new Client({
   restartOnAuthFail: true,
   puppeteer: {
@@ -39,9 +51,9 @@ client.initialize();
 client.on("message", (message) => {
   if (message.body.includes(".on")) {
     (async () => {
-      setInterval(async () => {
-        let time = dayjs.unix(Date.now() / 1000).format("HH:mm:ss");
-        if (time.split(":")[1] === "00") {
+      while (true) {
+        const time = dayjs.unix(Date.now() / 1000).format("HH:mm:ss");
+        if (time.split(":")[1] === "29") {
           const apiserver = new BINANCE();
           const getData = await apiserver.ScrapDataCoin();
           //   console.log(getData);
@@ -54,18 +66,22 @@ client.on("message", (message) => {
                 console.log("Precentasi", element.priceChangePercent + "%");
                 console.log("Volume 24 hours " + "$. " + element.quoteVolume);
                 console.log("");
-                const datarespone = `${"Name : " + element.symbol}\n${
-                  "Price : " + element.lastPrice
-                }\n${"Precentasi : " + element.priceChangePercent + "%"}\n${
-                  "Volume 24 hours : " + "$ " + parseFloat(element.quoteVolume)
+                const datarespone = `${"*NAMA :* " + element.symbol}\n${
+                  "*PRICE : $*" + element.lastPrice
+                }\n${"*PRECENTASI :* " + element.priceChangePercent + "%"}\n${
+                  "*VOLUME 24 HOURS :* " +
+                  "*$* " +
+                  convert(parseFloat(element.quoteVolume))
                 }\n`;
                 await delay(2000);
                 client.sendMessage(message.from, datarespone);
               }
             }
           }
+          await delay(61000);
         }
-      }, 1000);
+        await delay(1000);
+      }
     })();
   } else if (message.body.includes(".list_token_hot")) {
     (async () => {
