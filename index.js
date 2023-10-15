@@ -53,7 +53,7 @@ client.on("message", (message) => {
     (async () => {
       while (true) {
         const time = dayjs.unix(Date.now() / 1000).format("HH:mm:ss");
-        if (time.split(":")[1] === "29") {
+        if (time.split(":")[1] === "00") {
           const apiserver = new BINANCE();
           const getData = await apiserver.ScrapDataCoin();
           //   console.log(getData);
