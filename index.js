@@ -60,7 +60,8 @@ client.on("message", (message) => {
           for (let index = 0; index < getData.length; index++) {
             const element = getData[index];
             if (element.symbol.includes("USDT")) {
-              if (parseInt(element.priceChangePercent) === 2) {
+              if (parseInt(element.priceChangePercent) >= 20 &&
+        parseInt(element.priceChangePercent) < 50) {
                 console.log("Name", element.symbol);
                 console.log("Price", element.lastPrice);
                 console.log("Precentasi", element.priceChangePercent + "%");
