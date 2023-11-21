@@ -71,8 +71,8 @@ client.on("message", (message) => {
                   "*PRICE : $*" + element.lastPrice
                 }\n${"*PRECENTASI :* " + element.priceChangePercent + "%"}\n${
                   "*VOLUME 24 HOURS :* " +
-                  "*$* " +
-                  convert(parseFloat(element.quoteVolume))
+                  "$" +
+                  convert(parseInt(element.quoteVolume))
                 }\n`;
                 await delay(2000);
                 client.sendMessage(message.from, datarespone);
