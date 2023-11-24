@@ -60,8 +60,10 @@ client.on("message", (message) => {
           for (let index = 0; index < getData.length; index++) {
             const element = getData[index];
             if (element.symbol.includes("USDT")) {
-              if (parseInt(element.priceChangePercent) >= 20 &&
-        parseInt(element.priceChangePercent) < 50) {
+              if (
+                parseInt(element.priceChangePercent) >= 20 &&
+                parseInt(element.priceChangePercent) < 50
+              ) {
                 console.log("Name", element.symbol);
                 console.log("Price", element.lastPrice);
                 console.log("Precentasi", element.priceChangePercent + "%");
@@ -79,7 +81,7 @@ client.on("message", (message) => {
               }
             }
           }
-          await delay(61000);
+          await delay(50000);
         }
         await delay(1000);
       }
